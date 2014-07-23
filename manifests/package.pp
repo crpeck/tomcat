@@ -9,4 +9,8 @@ class tomcat::package {
     require => Package[$tomcat::java_pkg],
   }
 
+  package { $tomcat::tomcat_admin_pkg:
+    ensure  => latest,
+    require => Package[$tomcat::tomcat_pkg],
+  }
 }

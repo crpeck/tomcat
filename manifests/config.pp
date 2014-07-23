@@ -8,6 +8,14 @@ class tomcat::config {
     content => template('tomcat/server.xml.erb'),
   }
 
+  file { "/etc/${tomcat::tomcat_pkg}/Catalina/localhost/manager.xml":
+    ensure  => file,
+    mode    => '0644',
+    owner   => 'root',
+    group   => $tomcat::tomcat_group,
+    content => template('tomcat/manager.xml.erb'),
+  }
+
   file { "/var/lib/${tomcat::tomcat_pkg}/bin":
     ensure  => directory,
     mode    => '0755',

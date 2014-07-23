@@ -24,7 +24,7 @@
 -->
 
 <tomcat-users>
-<% tomcat_managers.each do |manager| -%>
+<% @tomcat_managers.each do |manager| -%>
   <user username="<%= manager[0] %>" password="<%= manager[1] %>" roles="<%= manager[2] %>" />
 <% end -%>
 </tomcat-users>

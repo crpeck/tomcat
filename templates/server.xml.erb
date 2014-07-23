@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
+
+<!-- NOTE: This file is managed by Puppet!!! -->
+
 <!--
-  Managed by Puppet - do NOT modify.
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  See the NOTICE file distributed with
   this work for additional information regarding copyright ownership.
@@ -85,7 +87,7 @@
          This connector uses the JSSE configuration, when using APR, the
          connector should be using the OpenSSL style configuration
          described in the APR documentation -->
-<%if @ssl_enabled -%>
+<%if @ssl_port -%>
     <Connector port         = "<%= @ssl_port -%>"
                protocol     = "HTTP/1.1"
                SSLEnabled   = "true"
@@ -157,12 +159,14 @@
         <Valve className="org.apache.catalina.authenticator.SingleSignOn" />
         -->
 
-<%if @remoteipheader -%>
-
-        <!-- setup RemoteIpValve for F5 -->
         <Valve className="org.apache.catalina.valves.RemoteIpValve"
-                internalProxies= "<%= @internalproxies -%>"
-                remoteIpHeader="x-forwarded-for" />
+           remoteIpHeader="x-forwarded-for"
+           remoteIpProxiesHeader="x-forwarded-by"
+           protocolHeader="x-forwarded-proto"
+<% if @internalproxies -%>
+           internalProxies="<%= @internalproxies -%>"
+<% end %>
+        />
 
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html
@@ -171,15 +175,6 @@
                prefix="localhost_access_log." suffix=".txt"
                pattern="%t %a %A %u &quot;%r&quot; %s %b"
                requestAttributesEnabled = "true" />
-<% else -%>
-
-        <!-- Access log processes all example.
-             Documentation at: /docs/config/valve.html
-             Note: The pattern used is equivalent to using pattern="common" -->
-        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
-               prefix="localhost_access_log." suffix=".txt"
-               pattern="%t %a %A %u &quot;%r&quot; %s %b" />
-<% end -%>
 
       </Host>
     </Engine>

@@ -1,3 +1,18 @@
+# Class: tomcat
+#
+# This class installs Apache Tomcat
+#
+# Parameters:
+#
+# Actions:
+#   - Install Apache
+#   - Manage Apache Service
+#
+# Requires:
+#
+# Sample Usage:
+#
+
 class tomcat (
   $port            = $tomcat::params::port,
   $ssl_port        = $tomcat::params::ssl_port,
@@ -8,7 +23,6 @@ class tomcat (
   $key_alias       = $tomcat::params::key_alias,
   $java_opts       = $tomcat::params::java_opts,
   $setenv          = $tomcat::params::setenv,
-  $remoteipheader  = $tomcat::params::remoteipheader,
   $internalproxies = $tomcat::params::internalproxies,
   $tomcat_managers = $tomcat::params::tomcat_managers,
 ) inherits tomcat::params {
