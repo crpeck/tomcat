@@ -1,4 +1,4 @@
-tomcat
-======
+puppet-tomcat
+=========
 
-Puppet Module for tomcat on ubuntu and redhat
+A puppet module for managing single instances of tomcat.
