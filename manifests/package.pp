@@ -1,16 +1,16 @@
-class tomcat::package {
+class tomcat7::package {
 
-  package { $tomcat::java_pkg:
+  package { $tomcat7::java_pkg:
     ensure => latest,
   }
 
-  package { $tomcat::tomcat_pkg:
+  package { $tomcat7::tomcat_pkg:
     ensure  => latest,
-    require => Package[$tomcat::java_pkg],
+    require => Package[$tomcat7::java_pkg],
   }
 
-  package { $tomcat::tomcat_admin_pkg:
+  package { $tomcat7::tomcat_admin_pkg:
     ensure  => latest,
-    require => Package[$tomcat::tomcat_pkg],
+    require => Package[$tomcat7::tomcat_pkg],
   }
 }

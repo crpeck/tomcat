@@ -43,6 +43,6 @@ vagrant@tmpl-trusty:/etc/tomcat7/Catalina/localhost$ cat manager.xml
   docBase="/usr/share/tomcat7-admin/manager" 
   antiResourceLocking="false" privileged="true" >
   <Valve className="org.apache.catalina.valves.RemoteAddrValve"
-    allow="127\.0\.0\.1, 128\.239\.*\.*" />
+    allow="<%= @manager_hosts -%>" />
 </Context>
 

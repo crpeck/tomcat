@@ -1,36 +1,70 @@
 # Class: tomcat
 #
-# This class installs Apache Tomcat
+# This class installs Apache Tomcat and Tomcat Admin/Manager
+# Note the following are also set in the server.xml file:
+#<Valve className="org.apache.catalina.valves.RemoteIpValve"
+#           remoteIpHeader="x-forwarded-for"
+#           remoteIpProxiesHeader="x-forwarded-by"
+#           protocolHeader="x-forwarded-proto"
+#           internalProxies="$internalproxies" (if it has a value)
+#        />
 #
 # Parameters:
+#   port - port that Tomcat listens on
+#   ssl_port - if defined, the SSL port Tomcat listens on, setting this enables SSL
+#   max_threads - maxthreads setting in server.xml
+#   keystore_file - file that contains the java keystore for SSL
+#   keystore_pass - password for $keystore_file
+#   keystore_alias - alias associated with $keystore_file
+#   java_opts - options passwd to java for Tomcat
+#   setenv - ENVironment variables set for Tomcat process
+#   internalproxies - internal proxy ip's for RemoteIpValve - set for load balancer or Apache/NGINX proxy front end
+#   tomcat_manager - userids and their roles for Tomcat manager app
+#   manager_hosts - host ip's allowed access to /manager app
 #
 # Actions:
-#   - Install Apache
+#   - Install Apache Tomcat and manager app
 #   - Manage Apache Service
 #
 # Requires:
 #
 # Sample Usage:
 #
+#  class { '::tomcat':
+#    port                              => '8080',
+#    ssl_port                          => '8443',
+#    java_opts                         => [ '-Xms512M', '-Xmx1024M' ],
+#    keystore_file                     => '/etc/tomcat7/.keystore',
+#    keystore_pass                     => 'changeit',
+#    keystore_alias                    => 'keyalias',
+#    setenv                            => {
+#                                          tomcat_local_etc => '/etc/tomcat7',
+#                                          },
+#    tomcat_managers                   => [
+#                                           [ 'manager', 'manager-password', 'admin,manger-gui,manager-script,manager-status' ],
+#                                           [ 'nagios', 'nagios-password', 'manager-status' ],
+#                                         ],
+#    manager_hosts                     => '127\.0\.0\.1,192\.168\.*\.*,10\.\*\.*\.*',
+#  }
+
 
 class tomcat (
-  $port            = $tomcat::params::port,
-  $ssl_port        = $tomcat::params::ssl_port,
-  $ssl_enabled     = $tomcat::params::ssl_enabled,
-  $max_threads     = $tomcat::params::max_threads,
-  $keystore_file   = $tomcat::params::keystore_file,
-  $keystore_pass   = $tomcat::params::keystore_pass,
-  $key_alias       = $tomcat::params::key_alias,
-  $java_opts       = $tomcat::params::java_opts,
-  $setenv          = $tomcat::params::setenv,
-  $internalproxies = $tomcat::params::internalproxies,
-  $tomcat_managers = $tomcat::params::tomcat_managers,
-) inherits tomcat::params {
+  $port            = $tomcat7::params::port,
+  $ssl_port        = $tomcat7::params::ssl_port,
+  $max_threads     = $tomcat7::params::max_threads,
+  $keystore_file   = $tomcat7::params::keystore_file,
+  $keystore_pass   = $tomcat7::params::keystore_pass,
+  $keystore_alias  = $tomcat7::params::keystore_alias,
+  $java_opts       = $tomcat7::params::java_opts,
+  $setenv          = $tomcat7::params::setenv,
+  $internalproxies = $tomcat7::params::internalproxies,
+  $tomcat_managers = $tomcat7::params::tomcat_managers,
+  $manager_hosts   = $tomcat7::params::manager_hosts,
+) inherits tomcat7::params {
 
   validate_hash($setenv)
-  validate_string($keystore_file, $keystore_pass, $key_alias)
-  validate_array($java_opts)
-  validate_array($tomcat_managers)
+  validate_string($internalproxies, $keystore_file, $keystore_pass, $keystore_alias, $manager_hosts, $max_threads, $port, $ssl_port)
+  validate_array($java_opts, $tomcat_managers)
 
   if $::osfamily == 'Debian' {
     $tomcat_pkg       = 'tomcat7'
@@ -50,15 +84,16 @@ class tomcat (
     fail('Your operating system isn\'t supported by this tomcat module.')
   }
 
+  validate_string($tomcat_pkg, $tomcat_admin_pkg, $java_pkg, $defaults, $tomcat_group, $tomcat_user)
 
-  include tomcat::package
-  include tomcat::config
-  include tomcat::service
+  include tomcat7::package
+  include tomcat7::config
+  include tomcat7::service
 
   anchor { 'tomcat_start': } ->
-  Class [ 'tomcat::package' ] ->
-  Class [ 'tomcat::config' ] ->
-  Class [ 'tomcat::service' ] ->
+  Class [ 'tomcat7::package' ] ->
+  Class [ 'tomcat7::config' ] ->
+  Class [ 'tomcat7::service' ] ->
   anchor { 'tomcat_end': }
 
 }

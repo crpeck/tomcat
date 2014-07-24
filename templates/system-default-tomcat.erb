@@ -119,14 +119,14 @@ JAVA_OPTS="-Djava.awt.headless=true -XX:+UseConcMarkSweepGC"
 #  local Puppet settings
 #
 #
-<% scope['tomcat::setenv'].each_pair do |variable, value| -%>
+<% scope['tomcat7::setenv'].each_pair do |variable, value| -%>
 <%= variable.upcase %>=<%= value %>
 <% end -%>
 
 #
 #
 # JAVA OPTS
-<% scope['tomcat::java_opts'].each do |javaopt| -%>
+<% scope['tomcat7::java_opts'].each do |javaopt| -%>
 export JAVA_OPTS="${JAVA_OPTS} <%= javaopt %>"
 <% end -%>
 #
